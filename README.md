@@ -29,5 +29,5 @@ Your personal AI-powered code reviewer for instant feedback and improved code qu
 ---
 
 <p align="center">
-  Made with ❤️ by [Your Name]
+  Made with ❤️ by Kashinath Kesale
 </p>
