@@ -1,68 +1,241 @@
-* {
-  margin: 0%;
-  padding: 0%;
+:root {
+  /* Colors */
+  --background-color: #1a1a1a;
+  --panel-background: #242424;
+  --primary-accent: #646cff;
+  --primary-accent-hover: #535bf2;
+  --text-color: rgba(255, 255, 255, 0.87);
+  --text-color-secondary: #a0a0a0;
+  --border-color: #3e3e3e;
+  --code-background: #282c34;
+  --error-color: #ff6b6b;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-mono: 'Fira Code', 'Fira Mono', monospace;
+
+  /* Sizing & Spacing */
+  --border-radius: 12px;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Effects */
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --transition-fast: all 0.2s ease-in-out;
+}
+
+/* --- Base & Reset --- */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
+html {
+  scroll-behavior: smooth;
 }
 
-main {
-  height: 100%;
-  width: 100%;
-  padding: 1.5rem;
-  display: flex;
-  gap: 1rem;
-}
-
-main .left, main .right {
-  height: 100%;
-  flex-basis: 50%;
-  border-radius: 0.7rem;
-}
-
-main .left {
-  background-color: #000000;
-  position: relative;
-}
-
-.left .code {
-  height: 100%;
-  width: 100%;
-  /* padding: 1rem; */
-  overflow-y: auto;
-  border-radius: 0.7rem;
-  background-color: #000000;
-}
-
-.code pre code{
-  height: 100%;
-  width: 100%;
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background-color);
+  color: var(--text-color);
   margin: 0;
-  padding: 0;
+  line-height: 1.6;
 }
 
-main .left .review {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  background-color: rgb(219, 219, 255);
-  color: black;
-  padding: 0.5rem 2rem;
-  border-radius: 0.7rem;
-  font-weight: 500;
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--panel-background);
+}
+::-webkit-scrollbar-thumb {
+  background-color: #4f4f4f;
+  border-radius: 10px;
+  border: 2px solid var(--panel-background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+
+
+/* --- App Header --- */
+.app-header {
+  text-align: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.app-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--primary-accent);
+}
+
+.app-header p {
+  font-size: 1.1rem;
+  color: var(--text-color-secondary);
+  margin-top: 0.5rem;
+  max-width: 60ch; /* Improves readability */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Main Layout --- */
+.app-main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  /* Use flexbox on parent for better height management if needed */
+  height: calc(100vh - 155px); /* Adjusted for typical header height */
+}
+
+/* --- Editor & Review Panels --- */
+.editor-container, .review-container {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--panel-background);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+/* --- Code Editor Specifics --- */
+.editor-container {
+  gap: var(--spacing-md);
+}
+
+.code-editor {
+  flex-grow: 1;
+  /* !important is kept as it's often needed to override inline styles from editor libraries */
+  background-color: var(--code-background) !important;
+}
+
+.review-button {
+  background-color: var(--primary-accent);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  margin: 0 var(--spacing-lg) var(--spacing-lg); /* Consistent margin */
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  user-select: none;
+  transition: var(--transition-fast);
+  outline-offset: 4px; /* For focus ring */
 }
 
-main .right {
-  background-color: #343434;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
+.review-button:hover:not(:disabled) {
+  background-color: var(--primary-accent-hover);
+  transform: translateY(-2px);
+}
+
+.review-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.review-button:focus-visible {
+  outline: 2px solid var(--primary-accent);
+}
+
+.review-button:disabled {
+  background-color: #3a3a3a;
+  color: #777;
+  cursor: not-allowed;
+}
+
+/* --- Review Panel Specifics --- */
+.review-container {
+  padding: var(--spacing-lg);
   overflow-y: auto;
 }
 
+.placeholder-text {
+  color: #6c6c6c;
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  font-style: italic;
+  user-select: none; /* Text is not selectable */
+}
+
+/* --- Markdown & Highlight.js Styling --- */
+.markdown-body {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.4em;
+  margin-top: 1.5em;
+  color: var(--primary-accent);
+}
+
+.markdown-body code {
+  background-color: #3c3c3c;
+  padding: 0.2em 0.4em;
+  margin: 0 0.1em;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.markdown-body pre {
+  background-color: var(--code-background);
+  padding: var(--spacing-md);
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 1em; /* Reset size inside pre blocks */
+}
+
+/* --- Loading Spinner & Error Message --- */
+.loading-spinner {
+  border: 4px solid #f3f3f330;
+  border-top: 4px solid var(--primary-accent);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: var(--spacing-xl) auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: var(--error-color);
+  background-color: rgba(255, 107, 107, 0.1);
+  border: 1px solid var(--error-color);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 900px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    height: auto; /* Let content define height */
+  }
+
+  .editor-container, .review-container {
+    /* Use min-height to prevent collapsing on small viewports */
+    min-height: 60vh;
+  }
+
+  .app-header h1 {
+    font-size: 2rem;
+  }
+}

@@ -1,68 +1,82 @@
-import { useState, useEffect, use } from 'react'
-import './App.css'
-import "prismjs/themes/prism-okaidia.css"
-import prism from 'prismjs'
-import Editor from "react-simple-code-editor"
-import axios from 'axios'
-import Markdown from 'react-markdown'
-import rehypeHighlight from 'rehype-highlight'
-import 'highlight.js/styles/atom-one-dark.css'
+import { useState } from 'react';
+import axios from 'axios';
+import Editor from 'react-simple-code-editor';
+import Markdown from 'react-markdown';
+import prism from 'prismjs';
+import rehypeHighlight from 'rehype-highlight';
+
+import 'prismjs/themes/prism-okaidia.css';
+import 'highlight.js/styles/atom-one-dark.css';
+import './App.css';
+
+const defaultCode = `function sayHello(name) {
+  if (!name) {
+    console.log("Hello, World!");
+  } else {
+    console.log("Hello, " + name);
+  }
+}`;
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [code, setCode] = useState(`function App() {
-  return 1+2
-}`)
+  const [code, setCode] = useState(defaultCode);
+  const [review, setReview] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-const [review, setReview] = useState('');
+  async function getCodeReview() {
+    setIsLoading(true);
+    setError('');
+    setReview('');
 
-useEffect(() => {
-  prism.highlightAll()
-}, [])
-
-async function reviewCode() {
-  try {
-    const response = await axios.post('http://localhost:3000/ai/get-review', { code });
-    setReview(response.data);
-  } catch (error) {
-    console.error('Error reviewing code:', error);
+    try {
+      const response = await axios.post('http://localhost:3000/ai/get-review', { code });
+      setReview(response.data.data || response.data);
+    } catch (err) {
+      setError('Failed to get code review. Please ensure the backend is running.');
+      console.error('Error reviewing code:', err);
+    } finally {
+      setIsLoading(false);
+    }
   }
-}
-
-
 
   return (
-    <>
-      <main>
-        <div className="left">
-          <div className="code">
-            <Editor
-              value={code}
-              onValueChange={setCode}
-              highlight={code => prism.highlight(code, prism.languages.javascript, 'javascript')}
-              padding={10}
-              className="editor"
-              style={{
-                fontFamily: '"Fira code", "Fira Mono", monospace',
-                fontSize: 16,
-                backgroundColor: '#282c34',
-                color: '#abb2bf',
-                height: '100%',
-                width: '100%',
-              }}
-            />
-          </div>
-          <div className="review" onClick={reviewCode}>Review</div>
-        </div>
-        <div className="right">
-          <Markdown
-            rehypePlugins={[rehypeHighlight]}
-            >{review}</Markdown>
-        </div>
+    <div className="app-wrapper"> 
+      <header className="app-header">
+        <h1>CodeGuardian 🛡️</h1>
+        <p>Your personal AI-powered code reviewer</p>
+      </header>
+      <main className="app-main">
+        <section className="editor-container">
+          <Editor
+            value={code}
+            onValueChange={setCode}
+            highlight={(code) => prism.highlight(code, prism.languages.javascript, 'javascript')}
+            padding={16}
+            className="code-editor"
+            style={{
+              fontFamily: '"Fira Code", "Fira Mono", monospace',
+              fontSize: 16,
+            }}
+          />
+          <button className="review-button" onClick={getCodeReview} disabled={isLoading}>
+            {isLoading ? 'Analyzing...' : 'Review Code'}
+          </button>
+        </section>
+        <section className="review-container">
+          {isLoading && <div className="loading-spinner"></div>}
+          {error && <p className="error-message">{error}</p>}
+          {!isLoading && !error && !review && (
+            <p className="placeholder-text">Your code review will appear here...</p>
+          )}
+          {review && (
+            <div className="markdown-body">
+              <Markdown rehypePlugins={[rehypeHighlight]}>{review}</Markdown>
+            </div>
+          )}
+        </section>
       </main>
-    </>
-  )
+    </div>
+  );
 }
 
-
-export default App
+export default App;

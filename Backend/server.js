@@ -10,5 +10,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
 
-module.exports = app; // Export the app for testing or further configuration
-// This allows the app to be imported in other files, such as for testing purposes.
+module.exports = app; 
