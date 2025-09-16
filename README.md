@@ -12,7 +12,7 @@ Your personal AI-powered code reviewer for instant feedback and improved code qu
 
 ---
 
-## 📸 Screenshot
+## 📸 Screenshots
 <img width="1910" height="906" alt="Screenshot 2025-09-16 203729" src="https://github.com/user-attachments/assets/3b6f73f7-53c8-406e-b3b4-c70270223cb9" />
 <img width="1906" height="908" alt="Screenshot 2025-09-16 204152" src="https://github.com/user-attachments/assets/4ab9539c-646e-410a-a3fb-63b1b650b287" />
 
